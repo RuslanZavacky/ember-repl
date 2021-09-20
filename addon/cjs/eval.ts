@@ -44,9 +44,14 @@ const modules = {
 
 export type ExtraModules = Record<string, unknown>;
 
+export type Options = {
+  skypack?: boolean;
+}
+
 export function evalSnippet(
   compiled: string,
-  extraModules: ExtraModules = {}
+  extraModules: ExtraModules = {},
+  options: Options = {}
 ): {
   default: Component;
   services?: { [key: string]: unknown };
@@ -61,6 +66,8 @@ export function evalSnippet(
 
     return preConfigured || window.require(moduleName);
   }
+
+  console.log(compiled);
 
   eval(compiled);
 

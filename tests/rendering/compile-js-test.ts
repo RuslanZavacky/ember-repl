@@ -103,6 +103,45 @@ module('compileJS()', function (hooks) {
     assert.dom().hasText('!!Example!!');
   });
 
+  test('can optionally import from npm via skypack', async function (assert) {
+    assert.expect(4);
+    assert.ok(ExampleComponent);
+
+    this.setProperties({
+      await: Await,
+      compile: async () => {
+        let template = `
+          import { Changeset as createChangeset } from 'validated-changeset';
+
+          let changeset = createChangeset({});
+
+          <template>
+            <a>{{changeset.isValid}}</a>
+            <b>{{changeset.isPristine}}</b>
+          </template>
+        `;
+
+        let { component, name, error } = await compileJS(template, {}, { skypack: true });
+
+        assert.notOk(error);
+        assert.ok(name);
+
+        return component;
+      },
+    });
+
+    await render(
+      hbs`
+        {{#let (this.compile) as |CustomComponent|}}
+          <this.await @promise={{CustomComponent}} />
+        {{/let}}
+      `
+    );
+
+    assert.dom('a').hasText('true');
+    assert.dom('b').hasText('true');
+  });
+
   test('extra modules may be passed, explicitly', async function (assert) {
     assert.expect(3);
 

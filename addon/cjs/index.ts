@@ -6,7 +6,7 @@ import { precompile as precompileTemplate } from 'ember-template-compiler';
 import { nameFor } from '../utils';
 import { evalSnippet } from './eval';
 
-import type { ExtraModules } from './eval';
+import type { ExtraModules, Options } from './eval';
 import type { Babel } from './types';
 
 export interface Info {
@@ -31,7 +31,7 @@ export interface Info {
  *  are not provided by extraModules will be searched on npm to see if a package
  *  needs to be downloaded before running the `code` / invoking the component
  */
-export async function compileJS(code: string, extraModules?: ExtraModules) {
+export async function compileJS(code: string, extraModules?: ExtraModules, options?: Options) {
   let name = nameFor(code);
   let component: undefined | unknown;
   let error: undefined | Error;
@@ -43,7 +43,7 @@ export async function compileJS(code: string, extraModules?: ExtraModules) {
       throw new Error(`Compiled output is missing`);
     }
 
-    component = evalSnippet(compiled, extraModules).default;
+    component = evalSnippet(compiled, extraModules, options).default;
   } catch (e) {
     error = e;
   }
