@@ -1,5 +1,5 @@
-export { compileJS } from './cjs';
 export { compileHBS } from './hbs';
+export { compileJS } from './js';
 export { invocationName, invocationOf, nameFor } from './utils';
 
 // Public Types
