@@ -24,9 +24,11 @@ export function compileJS(code: string, extraModules?: ExtraModules, options?: O
   if (options?.skypack) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((window as any).require) {
-      throw new Error(
-        `Your environment is using AMD utilities -- using native ESM is not allowed unless the environment is also ESM`
-      );
+      return {
+        component: undefined,
+        name: undefined,
+        error: `Your environment is using AMD utilities -- using native ESM is not allowed unless the environment is also ESM`,
+      };
     }
 
     return compileESM(code, extraModules);
