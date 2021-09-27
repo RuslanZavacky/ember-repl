@@ -52,7 +52,9 @@ function proxyToSkypack(code: string, extraModules?: ExtraModules) {
 
 async function evalSnippet(code: string) {
   let encodedJs = encodeURIComponent(code);
-  let result = await import(`data:text/javascript;charset=utf-8,${encodedJs}`);
+  let result = await import(
+    /* webpackIgnore: true */ `data:text/javascript;charset=utf-8,${encodedJs}`
+  );
 
   if (!result.default) {
     throw new Error(`Expected module to have a default export, found ${Object.keys(result)}`);

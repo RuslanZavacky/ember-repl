@@ -2,7 +2,7 @@ import { setComponentTemplate } from '@ember/component';
 import templateOnly from '@ember/component/template-only';
 import { click, render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
-import { module, test } from 'qunit';
+import { module, test, skip } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 
 // import this so we don't tree-shake it away
@@ -148,7 +148,7 @@ module('compileJS()', function (hooks) {
   module('in AMD / requirejs environments (old-style)', function () {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((window as any).require) {
-      test('can optionally import from npm via skypack', async function (assert) {
+      skip('can optionally import from npm via skypack', async function (assert) {
         assert.expect(4);
 
         this.setProperties({
@@ -191,14 +191,13 @@ module('compileJS()', function (hooks) {
   module('in ESM environments', function () {
     // probably need a better way to test this
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!(window as any).require) {
-      test('can optionally import from npm via skypack', async function (assert) {
-        assert.expect(4);
+    test('can optionally import from npm via skypack', async function (assert) {
+      assert.expect(4);
 
-        this.setProperties({
-          await: Await,
-          compile: async () => {
-            let template = `
+      this.setProperties({
+        await: Await,
+        compile: async () => {
+          let template = `
           import { Changeset as createChangeset } from 'validated-changeset';
 
           let changeset = createChangeset({});
@@ -209,26 +208,25 @@ module('compileJS()', function (hooks) {
           </template>
         `;
 
-            let { component, name, error } = await compileJS(template, {}, { skypack: true });
+          let { component, name, error } = await compileJS(template, {}, { skypack: true });
 
-            assert.notOk(error);
-            assert.ok(name);
+          assert.notOk(error);
+          assert.ok(name);
 
-            return component;
-          },
-        });
+          return component;
+        },
+      });
 
-        await render(
-          hbs`
+      await render(
+        hbs`
             {{#let (this.compile) as |CustomComponent|}}
               <this.await @promise={{CustomComponent}} />
             {{/let}}
           `
-        );
+      );
 
-        assert.dom('a').hasText('true');
-        assert.dom('b').hasText('true');
-      });
-    }
+      assert.dom('a').hasText('true');
+      assert.dom('b').hasText('true');
+    });
   });
 });
